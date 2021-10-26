@@ -11,19 +11,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>Order food in restaurant "the Personal Ham Processors"</h1>
-    
-    <?php
-        
-        if(isset($_POST['btn'])){
-        if(isset($_POST['express_delivery'])){
-            echo "<div class='alert alert-success' role='alert'> Your delivery will arrive in 45 minutes! </div>";
-        }else{
-            echo "<div class='alert alert-success' role='alert'> Your delivery will arrive in 2 minutes!  </div>";
-        }
-        }else{
-        }    
-    ?>    
+    <h1>Order food in restaurant "the Personal Ham Processors"</h1>      
     <nav>
         <ul class="nav">
             <li class="nav-item">

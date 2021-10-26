@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 //we are going to use session variables so we need to enable sessions
 session_start();
-setcookie("cookiee","ola");
+// setcookie("cookiee","ola");
+
+
+$totalValue = 0;
+$price;
+$order = [];
+
 function whatIsHappening() {
     echo '<h2>$_GET</h2>';
     var_dump($_GET);
@@ -19,6 +25,9 @@ function whatIsHappening() {
 
 
 
+        
+ 
+   
 $email = $street = $streetnumber = $city = $zipcode = "";
 $emailErr = $streetErr = $streetnumberErr = $cityErr = $zipcodeErr = "";
 
@@ -73,7 +82,6 @@ $_SESSION['streetnumber'] = $_POST['streetnumber'];
 $_SESSION['city'] = $_POST['city'];
 $_SESSION['zipcode'] = $_POST['zipcode'];
 
-
 //your products with their price.
 $food = [
     ['name' => 'Club Ham', 'price' => 3.20],
@@ -104,19 +112,23 @@ if(isset($_GET["food"])){
   $products = $food;
 }
 
-$productsArr;
+
 if(isset($_POST['products'])){
   $position = $_POST['products'];
   // var_dump($position);
   $key = array_keys($position);
-  var_dump($key);
-  for($i=0; $i < count($position,1); $i++){
-    var_dump($position[$i]);
+  // var_dump($key);
+  for($i=0; $i < count($key,1); $i++){
+    // var_dump($products[$key[$i]]['price']); 
+    array_push($order, $products[$key[$i]]);
+    // var_dump($order);
+    // setcookie("order", strval($order));
+    $totalValue += $products[$key[$i]]['price'];
   }
-  
-  
+  setcookie("order", json_encode($order));
+  setcookie("price", strval($totalValue));
 }
-
+// var_dump(json_decode($_COOKIE['order']));
 
 // $to = "barbara.n.bio@gmail.com";
 // $subject = "teste";
@@ -130,9 +142,14 @@ if(isset($_POST['products'])){
 //   echo "Message could not be sent...";
 // }
 
-
-
-$totalValue = 0;
+if(isset($_POST['btn'])){
+  if(isset($_POST['express_delivery'])){
+    echo "<div class='alert alert-success' role='alert'> Your delivery will arrive in 45 minutes! </div>";
+  }else{
+    echo "<div class='alert alert-success' role='alert'> Your delivery will arrive in 2 minutes!  </div>";
+  }
+}
 
 require 'form-view.php';
-// whatIsHappening();
+whatIsHappening();
+?>
