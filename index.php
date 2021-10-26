@@ -122,11 +122,12 @@ if(isset($_POST['products'])){
     // var_dump($products[$key[$i]]['price']); 
     array_push($order, $products[$key[$i]]);
     // var_dump($order);
-    // setcookie("order", strval($order));
     $totalValue += $products[$key[$i]]['price'];
   }
   setcookie("order", json_encode($order));
-  setcookie("price", strval($totalValue));
+  setcookie("price", strval($totalValue), time() + (86400 * 30), "/");
+}else{
+  $totalValue = $_COOKIE['price'];
 }
 // var_dump(json_decode($_COOKIE['order']));
 
