@@ -4,27 +4,20 @@ declare(strict_types=1);
 
 //we are going to use session variables so we need to enable sessions
 session_start();
-
+setcookie("cookiee","ola");
 function whatIsHappening() {
     echo '<h2>$_GET</h2>';
     var_dump($_GET);
     echo '<h2>$_POST</h2>';
-    var_dump($_POST['email']);
+    var_dump($_POST);
     echo '<h2>$_COOKIE</h2>';
     var_dump($_COOKIE);
     echo '<h2>$_SESSION</h2>';
     var_dump($_SESSION);
-   
-   
-    var_dump($_POST['street']);
-    
-    var_dump($_POST['streetnumber']);
-   
-    var_dump($_POST['city']);
-    
-    var_dump($_POST['zipcode']);
 }
-whatIsHappening();
+// whatIsHappening();
+
+
 
 $email = $street = $streetnumber = $city = $zipcode = "";
 $emailErr = $streetErr = $streetnumberErr = $cityErr = $zipcodeErr = "";
@@ -98,17 +91,48 @@ $drink = [
 ];
 
 $products;
-
-if($_GET["food"]){
+if(isset($_GET["food"])){
+  if($_GET["food"]){
     $products = $food;
     // var_dump($products);
-}
-else{
+  }
+  else{
     $products = $drink;
     // var_dump($products);
+  }
+}else{
+  $products = $food;
 }
+
+$productsArr;
+if(isset($_POST['products'])){
+  $position = $_POST['products'];
+  // var_dump($position);
+  $key = array_keys($position);
+  var_dump($key);
+  for($i=0; $i < count($position,1); $i++){
+    var_dump($position[$i]);
+  }
+  
+  
+}
+
+
+// $to = "barbara.n.bio@gmail.com";
+// $subject = "teste";
+// $messege = "email enviado com php";
+// $header = "From: nunes.barbarac@gmail.com";
+// $enviar = mail($to, $subject, $messege, $header);
+
+// if( $enviar == true ) {
+//   echo "Message sent successfully...";
+// }else {
+//   echo "Message could not be sent...";
+// }
+
 
 
 $totalValue = 0;
 
 require 'form-view.php';
+// whatIsHappening();
