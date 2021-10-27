@@ -119,13 +119,14 @@ if(isset($_GET["food"])){
 }
 
 // get the product which the user chose and the price
-
+// the variable $price is used to show the price of the order in the email that is sended to the user when he/she submits the form$price=0;
 if(isset($_POST['products'])){
   $position = $_POST['products'];
   $key = array_keys($position);
   for($i=0; $i < count($key,1); $i++){
     array_push($order, $products[$key[$i]]);
     $totalValue += $products[$key[$i]]['price'];
+    $price += $products[$key[$i]]['price'];
   }
   setcookie("order", json_encode($order));
   setcookie("price", strval($totalValue), time() + (86400 * 30), "/");
@@ -144,10 +145,11 @@ function sendMessege(){
   $messege4= "<br> Your order will be delivered in: ";
   $headers = '<br> From: nunes.barbarac@gmail.com'."\r\n".'<br> Reply-To: suport@example.com' . "\r\n";
   global $order;
+  global $price;
   for($i = 0; $i < count($order); $i++){
     $messege2.= $order[$i]['name']. "- €".number_format($order[$i]['price'],2). "<br>";
   }
-  $messege= $messege2.$messege3.$_COOKIE['price'].$messege4.$_SESSION['street'].", ".$_SESSION['streetnumber'].", ".$_SESSION['city'].", ".$_SESSION['zipcode']."<br>";
+  $messege= $messege2.$messege3.number_format($price,2).$messege4.$_SESSION['street'].", ".$_SESSION['streetnumber'].", ".$_SESSION['city'].", ".$_SESSION['zipcode']."<br>";
   echo "<div class='alert alert-success' role='alert'>" .$messege. "</div>";
   // echo "<div class='alert alert-success' role='alert'>" .$headers. "</div>";
   $enviar = mail($to, $subject, $messege, $headers);
@@ -164,6 +166,8 @@ function sendMessege(){
 if(isset($_POST['btn'])){
   if(isset($_POST['express_delivery'])){
     echo "<div class='alert alert-success' role='alert'> Your delivery will arrive in 45 minutes! </div>";
+    $price += 5;
+    $totalValue += 5;
   }else{
     echo "<div class='alert alert-success' role='alert'> Your delivery will arrive in 2 hours!  </div>";
   }
