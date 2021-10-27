@@ -8,8 +8,9 @@ session_start();
 
 
 $totalValue = $_COOKIE['price'];
-$price;
+$price = 0;
 $order = [];
+$check = true;
 
 function whatIsHappening() {
     echo '<h2>$_GET</h2>';
@@ -34,52 +35,66 @@ $emailErr = $streetErr = $streetnumberErr = $cityErr = $zipcodeErr = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($_POST["email"])) {
         $emailErr = "E-mail is required";
+        $check = false;
     } else {
         $email = $_POST["email"];
+        $check = true;
     }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $emailErr = "Invalid email format";
+        $check = false;
     }else {
         $email = $_POST["email"];
         $_SESSION['email'] = $_POST['email'];
+        $check = true;
     }
 
     if (empty($_POST["street"])) {
       $streetErr = "Street is required";
+      $check = false;
     } else {
       $street = $_POST["street"];
       $_SESSION['street'] = $_POST['street'];
+      $check = true;
 
     } 
     if (empty($_POST["streetnumber"])) {
         $streetnumberErr = "Street number is required";
+        $check = false;
     } else {
       $streetnumber = $_POST["streetnumber"];
       $_SESSION['streetnumber'] = $_POST['streetnumber'];
+      $check = true;
 
     }
 
     if (!preg_match("/^[0-9]+$/",$streetnumber)) {
         $streetnumberErr = "The street number should be only numbers";
+        $check = false;
     }
   
     if (empty($_POST["city"])) {
         $cityErr = "City is required";
+        $check = false;
     } else {
       $city = $_POST["city"];
       $_SESSION['city'] = $_POST['city'];
+      $check = true;
     }
   
     if (empty($_POST["zipcode"])) {
       $zipcodeErr = "Zipcode is required";
+      $check = false;
     } else {
       $zipcode = $_POST["zipcode"];
       $_SESSION['zipcode'] = $_POST['zipcode'];
+      $check = true;
 
     }
     if (!preg_match("/^[0-9]+$/",$zipcode)) {
         $zipcodeErr = "The zipcode should be only numbers";
+        $check = false;
     }
   }
 
@@ -136,23 +151,23 @@ if(isset($_POST['products'])){
 
 // this function write an email to the user with his/her information 
 
-function sendMessege(){
+function sendMessage(){
   $to = $_SESSION['email'];
   $subject = "Your order";
-  // $messege1 = "Good morning,<br>";
-  $messege2 = "Your order is: <br>";
-  $messege3= "The total price is: € ";
-  $messege4= "<br> Your order will be delivered in: ";
+  // $message1 = "Good morning,<br>";
+  $message2 = "Your order is: <br>";
+  $message3= "The total price is: € ";
+  $message4= "<br> Your order will be delivered in: ";
   $headers = '<br> From: nunes.barbarac@gmail.com'."\r\n".'<br> Reply-To: suport@example.com' . "\r\n";
   global $order;
   global $price;
   for($i = 0; $i < count($order); $i++){
-    $messege2.= $order[$i]['name']. "- €".number_format($order[$i]['price'],2). "<br>";
+    $message2.= $order[$i]['name']. "- €".number_format($order[$i]['price'],2). "<br>";
   }
-  $messege= $messege2.$messege3.number_format($price,2).$messege4.$_SESSION['street'].", ".$_SESSION['streetnumber'].", ".$_SESSION['city'].", ".$_SESSION['zipcode']."<br>";
-  echo "<div class='alert alert-success' role='alert'>" .$messege. "</div>";
+  $message= $message2.$message3.number_format($price,2).$message4.$_SESSION['street'].", ".$_SESSION['streetnumber'].", ".$_SESSION['city'].", ".$_SESSION['zipcode']."<br>";
+  echo "<div class='alert alert-success' role='alert'>" .$message. "</div>";
   // echo "<div class='alert alert-success' role='alert'>" .$headers. "</div>";
-  $enviar = mail($to, $subject, $messege, $headers);
+  $enviar = mail($to, $subject, $message, $headers);
   
   if( $enviar == true ) {
     echo "Message sent successfully...";
@@ -163,7 +178,7 @@ function sendMessege(){
 
 // Show to the user in how many time his/her order will be delivered and call the function that send the email to the user
 
-if(isset($_POST['btn'])){
+if(isset($_POST['btn']) && isset($_POST['products']) && $check == true){
   if(isset($_POST['express_delivery'])){
     echo "<div class='alert alert-success' role='alert'> Your delivery will arrive in 45 minutes! </div>";
     $price += 5;
@@ -171,9 +186,9 @@ if(isset($_POST['btn'])){
   }else{
     echo "<div class='alert alert-success' role='alert'> Your delivery will arrive in 2 hours!  </div>";
   }
-  sendMessege();
+  sendMessage();
 }
 
 require 'form-view.php';
-whatIsHappening();
+// whatIsHappening();
 ?>
