@@ -7,7 +7,7 @@ session_start();
 // setcookie("cookiee","ola");
 
 
-$totalValue = 0;
+$totalValue = $_COOKIE['price'];
 $price;
 $order = [];
 
@@ -26,8 +26,8 @@ function whatIsHappening() {
 
 
         
- 
-   
+//  make the validation of the information that the user gives to the page
+
 $email = $street = $streetnumber = $city = $zipcode = "";
 $emailErr = $streetErr = $streetnumberErr = $cityErr = $zipcodeErr = "";
 
@@ -42,17 +42,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $emailErr = "Invalid email format";
     }else {
         $email = $_POST["email"];
+        $_SESSION['email'] = $_POST['email'];
     }
 
     if (empty($_POST["street"])) {
       $streetErr = "Street is required";
     } else {
       $street = $_POST["street"];
+      $_SESSION['street'] = $_POST['street'];
+
     } 
     if (empty($_POST["streetnumber"])) {
         $streetnumberErr = "Street number is required";
     } else {
       $streetnumber = $_POST["streetnumber"];
+      $_SESSION['streetnumber'] = $_POST['streetnumber'];
+
     }
 
     if (!preg_match("/^[0-9]+$/",$streetnumber)) {
@@ -63,12 +68,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $cityErr = "City is required";
     } else {
       $city = $_POST["city"];
+      $_SESSION['city'] = $_POST['city'];
     }
   
     if (empty($_POST["zipcode"])) {
       $zipcodeErr = "Zipcode is required";
     } else {
       $zipcode = $_POST["zipcode"];
+      $_SESSION['zipcode'] = $_POST['zipcode'];
+
     }
     if (!preg_match("/^[0-9]+$/",$zipcode)) {
         $zipcodeErr = "The zipcode should be only numbers";
@@ -76,11 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
 
-$_SESSION['email'] = $_POST['email'];
-$_SESSION['street'] = $_POST['street'];
-$_SESSION['streetnumber'] = $_POST['streetnumber'];
-$_SESSION['city'] = $_POST['city'];
-$_SESSION['zipcode'] = $_POST['zipcode'];
+
 
 //your products with their price.
 $food = [
@@ -98,6 +102,8 @@ $drink = [
     ['name' => 'Ice-tea', 'price' => 3],
 ];
 
+// send the infromation of the arrays food and drink to the page
+
 $products;
 if(isset($_GET["food"])){
   if($_GET["food"]){
@@ -112,16 +118,13 @@ if(isset($_GET["food"])){
   $products = $food;
 }
 
+// get the product which the user chose and the price
 
 if(isset($_POST['products'])){
   $position = $_POST['products'];
-  // var_dump($position);
   $key = array_keys($position);
-  // var_dump($key);
   for($i=0; $i < count($key,1); $i++){
-    // var_dump($products[$key[$i]]['price']); 
     array_push($order, $products[$key[$i]]);
-    // var_dump($order);
     $totalValue += $products[$key[$i]]['price'];
   }
   setcookie("order", json_encode($order));
@@ -129,26 +132,42 @@ if(isset($_POST['products'])){
 }else{
   $totalValue = $_COOKIE['price'];
 }
-// var_dump(json_decode($_COOKIE['order']));
 
-// $to = "barbara.n.bio@gmail.com";
-// $subject = "teste";
-// $messege = "email enviado com php";
-// $header = "From: nunes.barbarac@gmail.com";
-// $enviar = mail($to, $subject, $messege, $header);
+// this function write an email to the user with his/her information 
 
-// if( $enviar == true ) {
-//   echo "Message sent successfully...";
-// }else {
-//   echo "Message could not be sent...";
-// }
+function sendMessege(){
+  $to = $_SESSION['email'];
+  $subject = "Your order";
+  // $messege1 = "Good morning,<br>";
+  $messege2 = "Your order is: <br>";
+  $messege3= "The total price is: € ";
+  $messege4= "<br> Your order will be delivered in: ";
+  $headers = '<br> From: nunes.barbarac@gmail.com'."\r\n".'<br> Reply-To: suport@example.com' . "\r\n";
+  global $order;
+  for($i = 0; $i < count($order); $i++){
+    $messege2.= $order[$i]['name']. "- €".number_format($order[$i]['price'],2). "<br>";
+  }
+  $messege= $messege2.$messege3.$_COOKIE['price'].$messege4.$_SESSION['street'].", ".$_SESSION['streetnumber'].", ".$_SESSION['city'].", ".$_SESSION['zipcode']."<br>";
+  echo "<div class='alert alert-success' role='alert'>" .$messege. "</div>";
+  // echo "<div class='alert alert-success' role='alert'>" .$headers. "</div>";
+  $enviar = mail($to, $subject, $messege, $headers);
+  
+  if( $enviar == true ) {
+    echo "Message sent successfully...";
+  }else {
+    echo "Message could not be sent...";
+  }
+}
+
+// Show to the user in how many time his/her order will be delivered and call the function that send the email to the user
 
 if(isset($_POST['btn'])){
   if(isset($_POST['express_delivery'])){
     echo "<div class='alert alert-success' role='alert'> Your delivery will arrive in 45 minutes! </div>";
   }else{
-    echo "<div class='alert alert-success' role='alert'> Your delivery will arrive in 2 minutes!  </div>";
+    echo "<div class='alert alert-success' role='alert'> Your delivery will arrive in 2 hours!  </div>";
   }
+  sendMessege();
 }
 
 require 'form-view.php';
