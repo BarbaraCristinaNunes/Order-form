@@ -148,7 +148,24 @@ if(isset($_POST['products'])){
 }else{
   $totalValue = $_COOKIE['price'];
 }
-
+// if(isset($_POST['products'])){
+//   $position = $_POST['products'];
+//   print_r($position);
+//   $key = array_keys($position);
+//   print_r($key);
+//   if($position > 0){
+//     for($i=0; $i < count($key,1); $i++){
+//       array_push($order, $products[$key[$i]]);
+//       $totalValue += $products[$key[$i]]['price'] * $key[$i];
+//       $price += $products[$key[$i]]['price'] * $key[$i];
+//     }
+//     setcookie("order", json_encode($order));
+//     setcookie("price", strval($totalValue), time() + (86400 * 30), "/");
+//   }else{
+//     $totalValue = $_COOKIE['price'];
+//   }
+  
+// }
 // this function write an email to the user with his/her information 
 
 function sendMessage(){
@@ -190,5 +207,5 @@ if(isset($_POST['btn']) && isset($_POST['products']) && $check == true){
 }
 
 require 'form-view.php';
-// whatIsHappening();
+whatIsHappening();
 ?>
